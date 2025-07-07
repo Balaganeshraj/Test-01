@@ -1,0 +1,6 @@
+# docker-compose.yml snippet
+services:
+  mongodb:
+    volumes:
+      - ./backups:/data/backup
+    command: mongod --backup --backupPath=/data/backup

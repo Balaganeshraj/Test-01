@@ -1,0 +1,20 @@
+/api/
+├── controllers/
+│   ├── googleAdsController.js
+│   ├── aiController.js
+│   ├── competitorController.js
+│   └── campaignController.js
+├── routes/
+│   ├── googleAdsRoutes.js
+│   ├── aiRoutes.js
+│   ├── competitorRoutes.js
+│   └── campaignRoutes.js
+├── services/
+│   ├── googleAdsService.js
+│   ├── aiService.js
+│   ├── competitorService.js
+│   └── dataSyncService.js
+├── middlewares/
+│   └── auth.js
+└── utils/
+    └── helpers.js

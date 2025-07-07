@@ -1,0 +1,18 @@
+// aiTemplates collection
+{
+  "_id": "65a1bc...",
+  "userId": "64f2ab...",
+  "originalImage": "s3://bucket/ads/photo1.jpg",
+  "variants": [
+    {
+      "image": "s3://bucket/ai/var1.jpg",
+      "headline": "Summer Sale - 50% Off!",
+      "performanceScore": 87,
+      "platformOptimized": {
+        "meta": true,
+        "google": false
+      }
+    }
+  ],
+  "generationCost": 0.35 // USD
+}

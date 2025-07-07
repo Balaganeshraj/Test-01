@@ -1,0 +1,11 @@
+/* Platform color coding */
+.campaign-card.meta { border-left: 4px solid #3b5998; }
+.campaign-card.google { border-left: 4px solid #4285F4; }
+.campaign-card.tiktok { border-left: 4px solid #000000; }
+
+/* Creative Studio grid */
+.variants-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}

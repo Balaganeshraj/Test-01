@@ -1,0 +1,9 @@
+{
+  "variants": [
+    {
+      "image": "base64-encoded-image",
+      "headline": "Summer Sale - 50% Off!",
+      "description": "Limited time offer on all products"
+    }
+  ]
+}
