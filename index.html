@@ -1,0 +1,1832 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GloMark Omni-Channel Dashboard</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+
+<link href="styles.css" rel="stylesheet"/></head>
+<body>
+<!-- Alert container for notifications -->
+<div class="alert-container" id="alertContainer"></div>
+<div class="container">
+<div class="header">
+<div class="logo">
+<i class="fas fa-chart-line" style="font-size: 2rem; color: var(--primary);"></i>
+<h1>GloMark Omni-Channel Dashboard</h1>
+</div>
+<div class="theme-toggle">
+<span>Dark Mode</span>
+<div class="theme-toggle-btn" onclick="toggleDarkMode()"></div>
+</div>
+<div class="auth-buttons">
+<button class="auth-btn login-btn" onclick="showLoginModal()">
+<i class="fas fa-sign-in-alt"></i> Login
+                </button>
+<button class="auth-btn signup-btn" onclick="showSignupModal()">
+<i class="fas fa-user-plus"></i> Sign Up
+                </button>
+</div>
+<div class="date-display">
+<i class="far fa-calendar-alt"></i> <span id="currentDate">July 7, 2025</span>
+<span class="real-time-badge" id="lastUpdated">
+<i class="fas fa-sync-alt"></i> Updated: Just now
+                </span>
+</div>
+</div>
+<div class="tabs">
+<button class="tab active" onclick="showTab('overview')">
+<i class="fas fa-chart-pie"></i> Overview
+            </button>
+<button class="tab" onclick="showTab('sales')">
+<i class="fas fa-store"></i> Store Sales
+            </button>
+<button class="tab" onclick="showTab('meta')">
+<i class="fab fa-facebook"></i> Meta Ads
+            </button>
+<button class="tab" onclick="showTab('comparison')">
+<i class="fas fa-exchange-alt"></i> Comparison
+            </button>
+<button class="tab" onclick="showTab('strategies')">
+<i class="fas fa-lightbulb"></i> Strategies
+            </button>
+<button class="tab" onclick="showTab('upload')">
+<i class="fas fa-upload"></i> Upload Data
+            </button>
+</div>
+<!-- Overview Tab -->
+<div class="tab-content active" id="overview">
+<div class="date-range-picker">
+<button class="date-range-btn active" onclick="setDateRange('month')">This Month</button>
+<button class="date-range-btn" onclick="setDateRange('week')">This Week</button>
+<button class="date-range-btn" onclick="setDateRange('quarter')">This Quarter</button>
+<div class="date-range-inputs">
+<input id="startDate" type="date" value="2025-07-01"/>
+<span>to</span>
+<input id="endDate" type="date" value="2025-07-31"/>
+<button class="btn btn-primary" onclick="applyDateRange()">Apply</button>
+</div>
+</div>
+<div class="metrics-grid">
+<div class="metric-card">
+<div class="metric-title">
+<i class="fas fa-rupee-sign"></i> Total Sales (LKR)
+                    </div>
+<div class="metric-value">₹97.9M</div>
+<div class="metric-change">
+<i class="fas fa-arrow-up positive"></i>
+<span class="positive">5.9%</span> vs last month
+                    </div>
+<div class="kpi-target">
+<span>Target: ₹100M</span>
+<div class="kpi-progress">
+<div class="kpi-progress-fill high-perf" style="width: 97.9%"></div>
+</div>
+</div>
+</div>
+<div class="metric-card">
+<div class="metric-title">
+<i class="fas fa-bullseye"></i> Achievement Rate
+                    </div>
+<div class="metric-value">78.5%</div>
+<div class="metric-change">
+<i class="fas fa-arrow-up positive"></i>
+<span class="positive">4.4%</span> vs last month
+                    </div>
+<div class="kpi-target">
+<span>Target: 80%</span>
+<div class="kpi-progress">
+<div class="kpi-progress-fill med-perf" style="width: 78.5%"></div>
+</div>
+</div>
+</div>
+<div class="metric-card">
+<div class="metric-title">
+<i class="fas fa-ad"></i> Meta Ad Spend (LKR)
+                    </div>
+<div class="metric-value">₹1.12M</div>
+<div class="metric-change">
+<i class="fas fa-arrow-up positive"></i>
+<span class="positive">12.5%</span> vs last month
+                    </div>
+<div class="kpi-target">
+<span>Target: ₹1.1M</span>
+<div class="kpi-progress">
+<div class="kpi-progress-fill high-perf" style="width: 102%"></div>
+</div>
+</div>
+</div>
+<div class="metric-card">
+<div class="metric-title">
+<i class="fas fa-shopping-cart"></i> Meta Conversions
+                    </div>
+<div class="metric-value">1,042</div>
+<div class="metric-change">
+<i class="fas fa-arrow-up positive"></i>
+<span class="positive">18.3%</span> vs last month
+                    </div>
+<div class="kpi-target">
+<span>Target: 1,000</span>
+<div class="kpi-progress">
+<div class="kpi-progress-fill high-perf" style="width: 104.2%"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="dashboard-grid">
+<div class="card">
+<h3><i class="fas fa-chart-line"></i> Omni-Channel Sales Trend</h3>
+<div class="chart-container">
+<canvas id="salesTrendChart"></canvas>
+</div>
+</div>
+<div class="card">
+<h3><i class="fas fa-chart-pie"></i> Sales Channel Distribution</h3>
+<div class="chart-container">
+<canvas id="salesDistributionChart"></canvas>
+</div>
+</div>
+</div>
+<div class="card">
+<h3><i class="fas fa-lightbulb"></i> Quick Insights</h3>
+<ul class="strategy-list">
+<li class="positive">
+<i class="fas fa-arrow-up"></i>
+<strong>Overall Growth:</strong> 5.9% increase in total sales
+                    </li>
+<li class="positive">
+<i class="fas fa-arrow-up"></i>
+<strong>Meta Performance:</strong> 18.3% more conversions with 12.5% higher spend
+                    </li>
+<li class="negative">
+<i class="fas fa-arrow-down"></i>
+<strong>Wattala Location:</strong> Consistently underperforming at 68.5% of target
+                    </li>
+<li class="neutral">
+<i class="fas fa-equals"></i>
+<strong>Mid-Week Slump:</strong> Tuesday-Wednesday sales consistently 12% below daily average
+                    </li>
+</ul>
+<div class="ai-recommendation">
+<h4><i class="fas fa-robot"></i> AI Recommendation</h4>
+<p>Based on current trends, we recommend increasing ad spend on high-performing conversion campaigns by 15-20% and implementing targeted promotions for the Wattala location to improve performance. Consider running mid-week specials to address the Tuesday-Wednesday slump.</p>
+</div>
+</div>
+</div>
+<!-- Store Sales Tab -->
+<div class="tab-content" id="sales">
+<div class="sales-toggle">
+<button class="sales-toggle-btn active" onclick="toggleSalesView('online')">Online Sales</button>
+<button class="sales-toggle-btn" onclick="toggleSalesView('instore')">In-Store Sales</button>
+</div>
+<div class="export-options">
+<button class="export-btn" onclick="exportData('sales-csv')">
+<i class="fas fa-file-csv"></i> Export as CSV
+                </button>
+<button class="export-btn" onclick="exportData('sales-pdf')">
+<i class="fas fa-file-pdf"></i> Export as PDF
+                </button>
+<button class="export-btn" onclick="exportData('sales-excel')">
+<i class="fas fa-file-excel"></i> Export as Excel
+                </button>
+</div>
+<div id="onlineSalesView">
+<div class="metrics-grid">
+<div class="metric-card">
+<div class="metric-title">
+<i class="fas fa-rupee-sign"></i> Online Sales (LKR)
+                        </div>
+<div class="metric-value">₹24.5M</div>
+<div class="metric-change">
+<i class="fas fa-arrow-up positive"></i>
+<span class="positive">8.2%</span> vs last month
+                        </div>
+</div>
+<div class="metric-card">
+<div class="metric-title">
+<i class="fas fa-bullseye"></i> Conversion Rate
+                        </div>
+<div class="metric-value">3.8%</div>
+<div class="metric-change">
+<i class="fas fa-arrow-up positive"></i>
+<span class="positive">0.4%</span> vs last month
+                        </div>
+</div>
+<div class="metric-card">
+<div class="metric-title">
+<i class="fas fa-shopping-cart"></i> Average Order Value
+                        </div>
+<div class="metric-value">₹4,250</div>
+<div class="metric-change">
+<i class="fas fa-arrow-up positive"></i>
+<span class="positive">5.1%</span> vs last month
+                        </div>
+</div>
+<div class="metric-card">
+<div class="metric-title">
+<i class="fas fa-exchange-alt"></i> Return Rate
+                        </div>
+<div class="metric-value">12.5%</div>
+<div class="metric-change">
+<i class="fas fa-arrow-down positive"></i>
+<span class="positive">1.2%</span> vs last month
+                        </div>
+</div>
+</div>
+<div class="card">
+<h3><i class="fas fa-chart-bar"></i> Online Sales by Channel</h3>
+<div class="chart-container">
+<canvas id="onlineSalesChart"></canvas>
+</div>
+</div>
+</div>
+<div id="instoreSalesView" style="display: none;">
+<div class="metrics-grid">
+<div class="metric-card">
+<div class="metric-title">
+<i class="fas fa-rupee-sign"></i> In-Store Sales (LKR)
+                        </div>
+<div class="metric-value">₹73.4M</div>
+<div class="metric-change">
+<i class="fas fa-arrow-up positive"></i>
+<span class="positive">5.1%</span> vs last month
+                        </div>
+</div>
+<div class="metric-card">
+<div class="metric-title">
+<i class="fas fa-store"></i> Top Location
+                        </div>
+<div class="metric-value">Nawala</div>
+<div class="metric-value" style="font-size: 1.2rem;">98.2%</div>
+</div>
+<div class="metric-card">
+<div class="metric-title">
+<i class="fas fa-users"></i> Foot Traffic
+                        </div>
+<div class="metric-value">42,850</div>
+<div class="metric-change">
+<i class="fas fa-arrow-up positive"></i>
+<span class="positive">6.8%</span> vs last month
+                        </div>
+</div>
+<div class="metric-card">
+<div class="metric-title">
+<i class="fas fa-percentage"></i> Conversion Rate
+                        </div>
+<div class="metric-value">31.2%</div>
+<div class="metric-change">
+<i class="fas fa-arrow-up positive"></i>
+<span class="positive">1.5%</span> vs last month
+                        </div>
+</div>
+</div>
+<div class="card">
+<h3><i class="fas fa-map-marked-alt"></i> Location Performance</h3>
+<div class="location-performance">
+<div class="location-card">
+<div class="location-header">
+<span class="location-name">1. Nawala</span>
+<span class="location-percentage positive">98.2%</span>
+</div>
+<div class="progress-bar">
+<div class="progress-fill high-perf" style="width: 98.2%"></div>
+</div>
+<div style="margin-top: 10px; font-size: 0.9rem;">
+<div><i class="fas fa-rupee-sign"></i> <strong>Sales:</strong> ₹12.4M</div>
+<div><i class="fas fa-users"></i> <strong>Foot Traffic:</strong> 8,240</div>
+<div><i class="fas fa-percentage"></i> <strong>Conversion:</strong> 34.5%</div>
+</div>
+</div>
+<div class="location-card">
+<div class="location-header">
+<span class="location-name">2. Negombo</span>
+<span class="location-percentage positive">95.4%</span>
+</div>
+<div class="progress-bar">
+<div class="progress-fill high-perf" style="width: 95.4%"></div>
+</div>
+<div style="margin-top: 10px; font-size: 0.9rem;">
+<div><i class="fas fa-rupee-sign"></i> <strong>Sales:</strong> ₹11.8M</div>
+<div><i class="fas fa-users"></i> <strong>Foot Traffic:</strong> 7,850</div>
+<div><i class="fas fa-percentage"></i> <strong>Conversion:</strong> 32.1%</div>
+</div>
+</div>
+<div class="location-card">
+<div class="location-header">
+<span class="location-name">3. Kottawa</span>
+<span class="location-percentage positive">94.8%</span>
+</div>
+<div class="progress-bar">
+<div class="progress-fill high-perf" style="width: 94.8%"></div>
+</div>
+<div style="margin-top: 10px; font-size: 0.9rem;">
+<div><i class="fas fa-rupee-sign"></i> <strong>Sales:</strong> ₹10.9M</div>
+<div><i class="fas fa-users"></i> <strong>Foot Traffic:</strong> 7,120</div>
+<div><i class="fas fa-percentage"></i> <strong>Conversion:</strong> 31.8%</div>
+</div>
+</div>
+<div class="location-card">
+<div class="location-header">
+<span class="location-name">11. Wattala</span>
+<span class="location-percentage negative">68.5%</span>
+</div>
+<div class="progress-bar">
+<div class="progress-fill low-perf" style="width: 68.5%"></div>
+</div>
+<div style="margin-top: 10px; font-size: 0.9rem;">
+<div><i class="fas fa-rupee-sign"></i> <strong>Sales:</strong> ₹6.2M</div>
+<div><i class="fas fa-users"></i> <strong>Foot Traffic:</strong> 5,430</div>
+<div><i class="fas fa-percentage"></i> <strong>Conversion:</strong> 24.1%</div>
+</div>
+</div>
+</div>
+</div>
+<div class="card">
+<h3><i class="fas fa-chart-bar"></i> Sales by Category</h3>
+<div class="chart-container">
+<canvas id="salesByCategoryChart"></canvas>
+</div>
+</div>
+</div>
+</div>
+<!-- Meta Ads Tab -->
+<div class="tab-content" id="meta">
+<div class="card">
+<h3><i class="fab fa-facebook"></i> Meta Ads Account</h3>
+<div class="meta-login-container" id="metaLoginContainer">
+<p>Connect your Meta Business account to automatically import ad performance data daily</p>
+<button class="meta-login-btn" onclick="connectMetaAccount()">
+<i class="fab fa-facebook-f"></i> Connect Meta Account
+                    </button>
+</div>
+<div id="metaConnected" style="display: none;">
+<div style="display: flex; align-items: center; gap: 15px; background: rgba(16, 185, 129, 0.1); padding: 15px; border-radius: 8px;">
+<i class="fas fa-check-circle" style="font-size: 2rem; color: var(--success);"></i>
+<div>
+<h4 style="margin-bottom: 5px;">Meta Account Connected</h4>
+<p>Your ad performance data will be updated automatically every 24 hours.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="meta-platform-toggle">
+<button class="platform-btn active" onclick="filterPlatform('all')">All Platforms</button>
+<button class="platform-btn" onclick="filterPlatform('facebook')">Facebook</button>
+<button class="platform-btn" onclick="filterPlatform('instagram')">Instagram</button>
+</div>
+<div class="meta-metrics-grid">
+<div class="meta-metric-card">
+<div class="metric-title">
+<i class="fas fa-eye"></i> Impressions
+                    </div>
+<div class="meta-metric-value">24,850</div>
+<div class="metric-change">
+<i class="fas fa-arrow-up positive"></i>
+<span class="positive">15.2%</span> vs last week
+                    </div>
+</div>
+<div class="meta-metric-card">
+<div class="metric-title">
+<i class="fas fa-hand-pointer"></i> Clicks
+                    </div>
+<div class="meta-metric-value">1,240</div>
+<div class="metric-change">
+<i class="fas fa-arrow-up positive"></i>
+<span class="positive">8.7%</span> vs last week
+                    </div>
+</div>
+<div class="meta-metric-card">
+<div class="metric-title">
+<i class="fas fa-shopping-cart"></i> Conversions
+                    </div>
+<div class="meta-metric-value">320</div>
+<div class="metric-change">
+<i class="fas fa-arrow-up positive"></i>
+<span class="positive">12.3%</span> vs last week
+                    </div>
+</div>
+<div class="meta-metric-card">
+<div class="metric-title">
+<i class="fas fa-percentage"></i> ROAS
+                    </div>
+<div class="meta-metric-value">3.8x</div>
+<div class="metric-change">
+<i class="fas fa-arrow-down negative"></i>
+<span class="negative">0.2x</span> vs last week
+                    </div>
+</div>
+</div>
+<div class="card">
+<h3><i class="fas fa-filter"></i> Filter Campaigns</h3>
+<div class="action-buttons">
+<button class="btn btn-primary" onclick="filterCampaigns('all')">
+<i class="fas fa-list"></i> All Campaigns
+                    </button>
+<button class="btn btn-secondary" onclick="filterCampaigns('awareness')">
+<i class="fas fa-eye"></i> Awareness
+                    </button>
+<button class="btn btn-secondary" onclick="filterCampaigns('conversion')">
+<i class="fas fa-shopping-cart"></i> Conversion
+                    </button>
+<button class="btn btn-secondary" onclick="filterCampaigns('top')">
+<i class="fas fa-trophy"></i> Top Performers
+                    </button>
+<button class="btn btn-secondary" onclick="filterCampaigns('low')">
+<i class="fas fa-exclamation-triangle"></i> Low Performers
+                    </button>
+</div>
+</div>
+<div class="card">
+<h3><i class="fas fa-bullhorn"></i> Campaign Performance</h3>
+<div class="campaign-performance" id="campaignPerformance">
+<!-- Campaign cards will be inserted here by JavaScript -->
+</div>
+</div>
+<div class="card">
+<h3><i class="fas fa-chart-line"></i> Campaign Performance Trend</h3>
+<div class="chart-container">
+<canvas id="campaignTrendChart"></canvas>
+</div>
+</div>
+</div>
+<!-- Comparison Tab -->
+<div class="tab-content" id="comparison">
+<div class="comparison-container">
+<div class="comparison-card">
+<div class="comparison-header">
+<div class="comparison-title">June 2025</div>
+<div class="comparison-badge badge-primary">Current Month</div>
+</div>
+<div class="comparison-metrics">
+<div class="comparison-metric">
+<div class="metric-title">Total Sales (LKR)</div>
+<div class="metric-value">₹97.9M</div>
+</div>
+<div class="comparison-metric">
+<div class="metric-title">Achievement Rate</div>
+<div class="metric-value">78.5%</div>
+</div>
+<div class="comparison-metric">
+<div class="metric-title">Ad Spend (LKR)</div>
+<div class="metric-value">₹1.12M</div>
+</div>
+<div class="comparison-metric">
+<div class="metric-title">Ad Conversions</div>
+<div class="metric-value">1,042</div>
+</div>
+</div>
+<div class="comparison-chart-container">
+<canvas id="currentMonthChart"></canvas>
+</div>
+</div>
+<div class="comparison-card">
+<div class="comparison-header">
+<div class="comparison-title">May 2025</div>
+<div class="comparison-badge badge-secondary">Previous Month</div>
+</div>
+<div class="comparison-metrics">
+<div class="comparison-metric">
+<div class="metric-title">Total Sales (LKR)</div>
+<div class="metric-value">₹92.4M</div>
+</div>
+<div class="comparison-metric">
+<div class="metric-title">Achievement Rate</div>
+<div class="metric-value">74.1%</div>
+</div>
+<div class="comparison-metric">
+<div class="metric-title">Ad Spend (LKR)</div>
+<div class="metric-value">₹0.99M</div>
+</div>
+<div class="comparison-metric">
+<div class="metric-title">Ad Conversions</div>
+<div class="metric-value">881</div>
+</div>
+</div>
+<div class="comparison-chart-container">
+<canvas id="previousMonthChart"></canvas>
+</div>
+</div>
+</div>
+<div class="card">
+<h3><i class="fas fa-chart-line"></i> Month-over-Month Comparison</h3>
+<div class="chart-container">
+<canvas id="monthComparisonChart"></canvas>
+</div>
+</div>
+<div class="dashboard-grid">
+<div class="card">
+<h3><i class="fas fa-chart-bar"></i> Key Performance Changes</h3>
+<ul class="strategy-list">
+<li class="positive">
+<i class="fas fa-arrow-up"></i>
+<strong>Total Sales:</strong> Increased by 5.9% (₹92.4M to ₹97.9M)
+                        </li>
+<li class="positive">
+<i class="fas fa-arrow-up"></i>
+<strong>Ad Conversions:</strong> Increased by 18.3% (881 to 1,042)
+                        </li>
+<li class="negative">
+<i class="fas fa-arrow-down"></i>
+<strong>Average ROAS:</strong> Decreased by 2.1% (9.47 to 9.27)
+                        </li>
+<li class="positive">
+<i class="fas fa-arrow-up"></i>
+<strong>Cost Per Purchase:</strong> Decreased by 4.8% (₹1,127 to ₹1,073)
+                        </li>
+</ul>
+</div>
+<div class="card">
+<h3><i class="fas fa-search"></i> Performance Analysis</h3>
+<ul class="strategy-list">
+<li>
+<i class="fas fa-ad"></i>
+<strong>Higher Ad Spend:</strong> 12.5% increase led to 18.3% more conversions
+                        </li>
+<li>
+<i class="fas fa-tags"></i>
+<strong>ROAS Decline:</strong> Due to testing new audience segments
+                        </li>
+<li>
+<i class="fas fa-bullseye"></i>
+<strong>Improved Targeting:</strong> Better audience targeting reduced CPP by 4.8%
+                        </li>
+<li>
+<i class="fas fa-store"></i>
+<strong>Store Performance:</strong> Nawala location showed exceptional growth
+                        </li>
+</ul>
+</div>
+</div>
+</div>
+<!-- Strategies Tab -->
+<div class="tab-content" id="strategies">
+<div class="card">
+<h3><i class="fas fa-chess-knight"></i> Growth Strategies</h3>
+<div class="strategy-grid">
+<div class="strategy-card">
+<h4><i class="fas fa-ad"></i> Meta Ads Optimization</h4>
+<ul>
+<li>Increase budget for high-ROAS conversion campaigns by 20%</li>
+<li>Refresh ad creatives every 2 weeks to combat fatigue</li>
+<li>Expand lookalike audiences based on top purchasers</li>
+<li>Implement dayparting to focus spend on high-conversion hours</li>
+</ul>
+</div>
+<div class="strategy-card">
+<h4><i class="fas fa-store"></i> Store Performance</h4>
+<ul>
+<li>Implement cross-training to improve peak hour staffing</li>
+<li>Analyze and replicate Nawala's success in other locations</li>
+<li>Develop location-specific promotions based on local preferences</li>
+<li>Improve visual merchandising in underperforming categories</li>
+</ul>
+</div>
+<div class="strategy-card">
+<h4><i class="fas fa-mobile-alt"></i> Digital Strategies</h4>
+<ul>
+<li>Launch geo-targeted mobile promotions for nearby stores</li>
+<li>Implement "Reserve Online, Pickup In-Store" with 5% discount</li>
+<li>Create personalized product recommendations</li>
+<li>Optimize checkout flow to reduce cart abandonment</li>
+</ul>
+</div>
+<div class="strategy-card">
+<h4><i class="fas fa-users"></i> Customer Engagement</h4>
+<ul>
+<li>Launch loyalty program with tiered rewards</li>
+<li>Implement customer feedback system with real-time alerts</li>
+<li>Create VIP customer program with exclusive benefits</li>
+<li>Develop community events to drive foot traffic</li>
+</ul>
+</div>
+<div class="strategy-card">
+<h4><i class="fas fa-retweet"></i> Omni-Channel Integration</h4>
+<ul>
+<li>Implement "Endless Aisle" for in-store online ordering</li>
+<li>Offer free WiFi with login to capture customer data</li>
+<li>Enable store associates with tablets to access online inventory</li>
+<li>Create digital wish lists accessible in-store</li>
+</ul>
+</div>
+<div class="strategy-card">
+<h4><i class="fas fa-shipping-fast"></i> Fulfillment Options</h4>
+<ul>
+<li>Expand "Buy Online, Pickup In-Store" with dedicated areas</li>
+<li>Offer curbside pickup with 10-minute guarantee</li>
+<li>Implement same-day delivery from local stores</li>
+<li>Create subscription options for frequent purchases</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="card">
+<h3><i class="fas fa-project-diagram"></i> Implementation Roadmap</h3>
+<div class="chart-container">
+<canvas id="roadmapChart"></canvas>
+</div>
+</div>
+</div>
+<!-- Upload Data Tab -->
+<div class="tab-content" id="upload">
+<div class="card">
+<h3><i class="fas fa-upload"></i> Upload Data</h3>
+<p>Upload your sales and marketing data to update the dashboard with the latest performance metrics.</p>
+<div class="action-buttons">
+<button class="btn btn-primary" onclick="document.getElementById('salesDataFile').click()">
+<i class="fas fa-file-excel"></i> Select Sales Data File
+                    </button>
+<button class="btn btn-secondary" onclick="document.getElementById('metaDataFile').click()">
+<i class="fab fa-facebook"></i> Select Meta Report File
+                    </button>
+<button class="btn btn-success" disabled="" id="processDataBtn" onclick="processUploadedData()">
+<i class="fas fa-cogs"></i> Process Uploaded Data
+                    </button>
+<input accept=".xlsx,.xls" class="file-input" id="salesDataFile" onchange="handleFileUpload(event, 'sales')" type="file"/>
+<input accept=".xlsx,.xls" class="file-input" id="metaDataFile" onchange="handleFileUpload(event, 'meta')" type="file"/>
+</div>
+<div class="processing-indicator" id="uploadProcessingIndicator">
+<div class="spinner"></div>
+<div>Processing uploaded data...</div>
+</div>
+<div id="uploadSuccess" style="display: none; margin-top: 20px;">
+<div style="display: flex; align-items: center; gap: 15px; background: rgba(16, 185, 129, 0.1); padding: 15px; border-radius: 8px;">
+<i class="fas fa-check-circle" style="font-size: 2rem; color: var(--success);"></i>
+<div>
+<h4 style="margin-bottom: 5px;">Data Processed Successfully!</h4>
+<p>Your data has been processed and the dashboard has been updated.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="dashboard-grid">
+<div class="card">
+<h3><i class="fas fa-info-circle"></i> Sales Data Requirements</h3>
+<ul class="strategy-list">
+<li>
+<i class="fas fa-file-excel"></i>
+<strong>Format:</strong> Excel (.xlsx or .xls) files only
+                        </li>
+<li>
+<i class="fas fa-columns"></i>
+<strong>Structure:</strong> Rows for each day, columns for each location
+                        </li>
+<li>
+<i class="fas fa-calendar-alt"></i>
+<strong>Required Columns:</strong> DATE, DAY, DAILY SALES TARGET
+                        </li>
+<li>
+<i class="fas fa-store"></i>
+<strong>Location Columns:</strong> One column per location with daily sales
+                        </li>
+</ul>
+</div>
+<div class="card">
+<h3><i class="fas fa-info-circle"></i> Meta Data Requirements</h3>
+<ul class="strategy-list">
+<li>
+<i class="fas fa-file-excel"></i>
+<strong>Format:</strong> Excel (.xlsx or .xls) exported from Meta Ads Manager
+                        </li>
+<li>
+<i class="fas fa-columns"></i>
+<strong>Structure:</strong> Should include standard Meta Ads columns
+                        </li>
+<li>
+<i class="fas fa-calendar-alt"></i>
+<strong>Date Range:</strong> Complete month for accurate comparison
+                        </li>
+<li>
+<i class="fas fa-filter"></i>
+<strong>Filters:</strong> Don't exclude important data
+                        </li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<!-- Login Modal -->
+<div id="loginModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+<div style="background: white; padding: 30px; border-radius: 10px; width: 100%; max-width: 400px;">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+<h2 style="color: var(--primary);">Login to Dashboard</h2>
+<button onclick="closeModal('loginModal')" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">×</button>
+</div>
+<form>
+<div style="margin-bottom: 15px;">
+<label style="display: block; margin-bottom: 5px; font-weight: 600;">Email</label>
+<input style="width: 100%; padding: 10px; border: 1px solid var(--gray); border-radius: 5px;" type="email"/>
+</div>
+<div style="margin-bottom: 20px;">
+<label style="display: block; margin-bottom: 5px; font-weight: 600;">Password</label>
+<input style="width: 100%; padding: 10px; border: 1px solid var(--gray); border-radius: 5px;" type="password"/>
+</div>
+<button onclick="handleLogin()" style="width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 5px; font-weight: 600; cursor: pointer;" type="button">Login</button>
+</form>
+<div style="margin-top: 15px; text-align: center;">
+<p>Don't have an account? <a href="#" onclick="showSignupModal()" style="color: var(--primary); font-weight: 600; cursor: pointer;">Sign up</a></p>
+</div>
+</div>
+</div>
+<!-- Signup Modal -->
+<div id="signupModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+<div style="background: white; padding: 30px; border-radius: 10px; width: 100%; max-width: 400px;">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+<h2 style="color: var(--primary);">Create Account</h2>
+<button onclick="closeModal('signupModal')" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">×</button>
+</div>
+<form>
+<div style="margin-bottom: 15px;">
+<label style="display: block; margin-bottom: 5px; font-weight: 600;">Full Name</label>
+<input style="width: 100%; padding: 10px; border: 1px solid var(--gray); border-radius: 5px;" type="text"/>
+</div>
+<div style="margin-bottom: 15px;">
+<label style="display: block; margin-bottom: 5px; font-weight: 600;">Email</label>
+<input style="width: 100%; padding: 10px; border: 1px solid var(--gray); border-radius: 5px;" type="email"/>
+</div>
+<div style="margin-bottom: 15px;">
+<label style="display: block; margin-bottom: 5px; font-weight: 600;">Password</label>
+<input style="width: 100%; padding: 10px; border: 1px solid var(--gray); border-radius: 5px;" type="password"/>
+</div>
+<div style="margin-bottom: 20px;">
+<label style="display: block; margin-bottom: 5px; font-weight: 600;">Confirm Password</label>
+<input style="width: 100%; padding: 10px; border: 1px solid var(--gray); border-radius: 5px;" type="password"/>
+</div>
+<button onclick="handleSignup()" style="width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 5px; font-weight: 600; cursor: pointer;" type="button">Create Account</button>
+</form>
+<div style="margin-top: 15px; text-align: center;">
+<p>Already have an account? <a href="#" onclick="showLoginModal()" style="color: var(--primary); font-weight: 600; cursor: pointer;">Login</a></p>
+</div>
+</div>
+</div>
+<script>
+        // Global variables
+        let salesData = [];
+        let metaAdsData = [];
+        let allCharts = {};
+        let uploadedFiles = {
+            sales: null,
+            meta: null
+        };
+        let darkMode = false;
+        
+        // Initialize date display
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric',
+            weekday: 'long'
+        });
+        
+        // Show alert notification
+        function showAlert(message, type = 'info') {
+            const alertContainer = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'times-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+                <span>${message}</span>
+                <button onclick="this.parentElement.remove()" style="margin-left: auto; background: none; border: none; color: white; cursor: pointer;">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            alertContainer.appendChild(alert);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+        
+        // Toggle dark mode
+        function toggleDarkMode() {
+            darkMode = !darkMode;
+            document.body.classList.toggle('dark-mode', darkMode);
+            document.querySelector('.theme-toggle-btn').classList.toggle('active', darkMode);
+            
+            // Update charts for dark mode
+            updateChartsForDarkMode();
+            
+            // Save preference to localStorage
+            localStorage.setItem('darkMode', darkMode);
+            
+            showAlert(`Dark mode ${darkMode ? 'enabled' : 'disabled'}`, 'info');
+        }
+        
+        // Check for saved dark mode preference
+        function checkDarkModePreference() {
+            const savedMode = localStorage.getItem('darkMode');
+            if (savedMode === 'true') {
+                darkMode = true;
+                document.body.classList.add('dark-mode');
+                document.querySelector('.theme-toggle-btn').classList.add('active');
+            }
+        }
+        
+        // Update charts for dark mode
+        function updateChartsForDarkMode() {
+            if (!allCharts.salesTrend) return;
+            
+            const textColor = darkMode ? '#f8fafc' : '#1e293b';
+            const gridColor = darkMode ? '#334155' : '#e2e8f0';
+            
+            Object.values(allCharts).forEach(chart => {
+                chart.options.scales.x.grid.color = gridColor;
+                chart.options.scales.y.grid.color = gridColor;
+                chart.options.scales.x.ticks.color = textColor;
+                chart.options.scales.y.ticks.color = textColor;
+                if (chart.options.plugins?.legend) {
+                    chart.options.plugins.legend.labels.color = textColor;
+                }
+                chart.update();
+            });
+        }
+        
+        // Tab navigation
+        function showTab(tabId) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Deactivate all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Activate selected tab
+            document.getElementById(tabId).classList.add('active');
+            document.querySelector(`.tab[onclick="showTab('${tabId}')"]`).classList.add('active');
+            
+            // Resize charts to fix rendering issues
+            setTimeout(() => {
+                Object.values(allCharts).forEach(chart => {
+                    if (chart) chart.resize();
+                });
+            }, 100);
+        }
+        
+        // Modal functions
+        function showLoginModal() {
+            document.getElementById('loginModal').style.display = 'flex';
+        }
+        
+        function showSignupModal() {
+            closeModal('loginModal');
+            document.getElementById('signupModal').style.display = 'flex';
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+        
+        function handleLogin() {
+            // In a real implementation, this would validate credentials
+            showAlert('Login successful!', 'success');
+            closeModal('loginModal');
+        }
+        
+        function handleSignup() {
+            // In a real implementation, this would create an account
+            showAlert('Account created successfully!', 'success');
+            closeModal('signupModal');
+        }
+        
+        // Connect Meta Account
+        function connectMetaAccount() {
+            // In a real implementation, this would use Facebook's OAuth flow
+            // For demo purposes, we'll simulate a successful connection
+            document.getElementById('metaLoginContainer').style.display = 'none';
+            document.getElementById('metaConnected').style.display = 'block';
+            
+            // Simulate fetching data after connection
+            setTimeout(() => {
+                showAlert('Meta account connected successfully! Data will be synced daily.', 'success');
+            }, 1000);
+        }
+        
+        // Filter campaigns
+        function filterCampaigns(filterType) {
+            const campaignContainer = document.getElementById('campaignPerformance');
+            campaignContainer.innerHTML = '';
+            
+            let filteredCampaigns = metaAdsData;
+            
+            if (filterType === 'awareness') {
+                filteredCampaigns = metaAdsData.filter(campaign => 
+                    campaign['Ad set delivery'].toLowerCase().includes('awareness'));
+            } else if (filterType === 'conversion') {
+                filteredCampaigns = metaAdsData.filter(campaign => 
+                    campaign['Ad set delivery'].toLowerCase().includes('conversion'));
+            } else if (filterType === 'top') {
+                filteredCampaigns = metaAdsData.filter(campaign => 
+                    campaign['Purchase ROAS (return on ad spend)'] > 10);
+            } else if (filterType === 'low') {
+                filteredCampaigns = metaAdsData.filter(campaign => 
+                    campaign['Purchase ROAS (return on ad spend)'] < 5 && campaign['Purchase ROAS (return on ad spend)'] > 0);
+            }
+            
+            // Update campaign cards
+            filteredCampaigns.forEach(campaign => {
+                if (campaign['Ad set name'] && campaign['Amount spent (LKR)'] && campaign['Purchases']) {
+                    const roas = campaign['Purchase ROAS (return on ad spend)'] || 0;
+                    const cpp = campaign['Cost per results'] || 0;
+                    const reach = campaign['Reach'] || 0;
+                    const ctr = campaign['CTR (all)'] || 0;
+                    
+                    const performanceClass = roas > 10 ? 'high-perf' : roas > 5 ? 'med-perf' : 'low-perf';
+                    
+                    const card = document.createElement('div');
+                    card.className = 'campaign-card';
+                    card.innerHTML = `
+                        <div class="campaign-header">
+                            <div class="campaign-name">${campaign['Ad set name'].substring(0, 30)}${campaign['Ad set name'].length > 30 ? '...' : ''}</div>
+                            <div class="campaign-roas ${roas > 10 ? 'positive' : roas > 5 ? 'neutral' : 'negative'}">ROAS: ${roas.toFixed(2)}</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill ${performanceClass}" style="width: ${Math.min(100, roas * 10)}%"></div>
+                        </div>
+                        <div style="margin-top: 10px; font-size: 0.9rem;">
+                            <div><i class="fas fa-rupee-sign"></i> <strong>Spend:</strong> ₹${parseInt(campaign['Amount spent (LKR)']).toLocaleString()}</div>
+                            <div><i class="fas fa-shopping-cart"></i> <strong>Purchases:</strong> ${campaign['Purchases']}</div>
+                            <div><i class="fas fa-wallet"></i> <strong>CPP:</strong> ₹${cpp.toLocaleString()}</div>
+                        </div>
+                    `;
+                    campaignContainer.appendChild(card);
+                }
+            });
+            
+            showAlert(`Filtered campaigns by ${filterType}`, 'info');
+        }
+        
+        // Toggle sales view
+        function toggleSalesView(view) {
+            document.querySelectorAll('.sales-toggle-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            if (view === 'online') {
+                document.getElementById('onlineSalesView').style.display = 'block';
+                document.getElementById('instoreSalesView').style.display = 'none';
+                document.querySelector('.sales-toggle-btn[onclick="toggleSalesView(\'online\')"]').classList.add('active');
+            } else {
+                document.getElementById('onlineSalesView').style.display = 'none';
+                document.getElementById('instoreSalesView').style.display = 'block';
+                document.querySelector('.sales-toggle-btn[onclick="toggleSalesView(\'instore\')"]').classList.add('active');
+            }
+            
+            // Resize charts
+            setTimeout(() => {
+                if (allCharts.onlineSalesChart) allCharts.onlineSalesChart.resize();
+                if (allCharts.salesByCategoryChart) allCharts.salesByCategoryChart.resize();
+            }, 100);
+        }
+        
+        // Filter platform
+        function filterPlatform(platform) {
+            document.querySelectorAll('.platform-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.querySelector(`.platform-btn[onclick="filterPlatform('${platform}')"]`).classList.add('active');
+            
+            showAlert(`Showing data for ${platform === 'all' ? 'all platforms' : platform}`, 'info');
+        }
+        
+        // Set date range
+        function setDateRange(range) {
+            document.querySelectorAll('.date-range-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.querySelector(`.date-range-btn[onclick="setDateRange('${range}')"]`).classList.add('active');
+            
+            const today = new Date();
+            let startDate, endDate;
+            
+            switch(range) {
+                case 'week':
+                    startDate = new Date(today);
+                    startDate.setDate(today.getDate() - today.getDay());
+                    endDate = new Date(startDate);
+                    endDate.setDate(startDate.getDate() + 6);
+                    break;
+                case 'month':
+                    startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+                    endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                    break;
+                case 'quarter':
+                    const quarter = Math.floor(today.getMonth() / 3);
+                    startDate = new Date(today.getFullYear(), quarter * 3, 1);
+                    endDate = new Date(today.getFullYear(), quarter * 3 + 3, 0);
+                    break;
+                default:
+                    return;
+            }
+            
+            document.getElementById('startDate').valueAsDate = startDate;
+            document.getElementById('endDate').valueAsDate = endDate;
+        }
+        
+        // Apply date range
+        function applyDateRange() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            
+            if (!startDate || !endDate) {
+                showAlert('Please select both start and end dates', 'error');
+                return;
+            }
+            
+            if (new Date(startDate) > new Date(endDate)) {
+                showAlert('Start date must be before end date', 'error');
+                return;
+            }
+            
+            showAlert(`Date range set from ${formatDate(startDate)} to ${formatDate(endDate)}`, 'success');
+            
+            // In a real implementation, this would filter the data
+            // For demo, we'll just update the last updated time
+            updateLastUpdated();
+        }
+        
+        // Format date for display
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('en-US', options);
+        }
+        
+        // Update last updated time
+        function updateLastUpdated() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('lastUpdated').innerHTML = `<i class="fas fa-sync-alt"></i> Updated: ${timeString}`;
+        }
+        
+        // Export data
+        function exportData(type) {
+            let message = '';
+            switch(type) {
+                case 'sales-csv':
+                    message = 'Sales data exported as CSV';
+                    break;
+                case 'sales-pdf':
+                    message = 'Sales data exported as PDF';
+                    break;
+                case 'sales-excel':
+                    message = 'Sales data exported as Excel';
+                    break;
+                default:
+                    message = 'Data exported';
+            }
+            
+            showAlert(message, 'success');
+        }
+        
+        // File upload handling
+        function handleFileUpload(event, dataType) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (!file.name.match(/\.(xlsx|xls)$/)) {
+                showAlert('Please upload an Excel file (.xlsx or .xls)', 'error');
+                return;
+            }
+
+            uploadedFiles[dataType] = file;
+            document.getElementById('processDataBtn').disabled = !(uploadedFiles.sales || uploadedFiles.meta);
+            
+            // Show which files are ready for processing
+            if (dataType === 'sales') {
+                event.target.previousElementSibling.innerHTML = `<i class="fas fa-check"></i> ${file.name.substring(0, 20)}...`;
+            } else {
+                event.target.previousElementSibling.innerHTML = `<i class="fas fa-check"></i> ${file.name.substring(0, 20)}...`;
+            }
+            
+            showAlert(`${dataType === 'sales' ? 'Sales' : 'Meta'} file selected: ${file.name}`, 'info');
+        }
+        
+        function processUploadedData() {
+            if (!uploadedFiles.sales && !uploadedFiles.meta) {
+                showAlert('Please upload at least one file before processing', 'error');
+                return;
+            }
+
+            showUploadProcessingIndicator();
+            
+            // Process sales data if uploaded
+            if (uploadedFiles.sales) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                        const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+                        
+                        salesData = processSalesData(jsonData);
+                        console.log('Processed sales data:', salesData);
+                        
+                    } catch (error) {
+                        hideUploadProcessingIndicator();
+                        showAlert('Error reading sales data file. Please check the file format.', 'error');
+                        console.error('Excel parsing error:', error);
+                        return;
+                    }
+                    
+                    // Process meta data if both files were uploaded
+                    if (!uploadedFiles.meta) {
+                        completeDataProcessing();
+                    }
+                };
+                reader.readAsArrayBuffer(uploadedFiles.sales);
+            }
+            
+            // Process meta data if uploaded
+            if (uploadedFiles.meta) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                        const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+                        
+                        metaAdsData = processMetaData(jsonData);
+                        console.log('Processed Meta data:', metaAdsData);
+                        
+                    } catch (error) {
+                        hideUploadProcessingIndicator();
+                        showAlert('Error reading Meta data file. Please check the file format.', 'error');
+                        console.error('Excel parsing error:', error);
+                        return;
+                    }
+                    
+                    // Process sales data if both files were uploaded
+                    if (!uploadedFiles.sales) {
+                        completeDataProcessing();
+                    }
+                };
+                reader.readAsArrayBuffer(uploadedFiles.meta);
+            }
+        }
+        
+        function completeDataProcessing() {
+            // Simulate processing delay
+            setTimeout(() => {
+                hideUploadProcessingIndicator();
+                document.getElementById('uploadSuccess').style.display = 'block';
+                
+                // Initialize charts with new data
+                initCharts();
+                filterCampaigns('all');
+                
+                // Reset file inputs
+                uploadedFiles = { sales: null, meta: null };
+                document.getElementById('processDataBtn').disabled = true;
+                document.getElementById('salesDataFile').value = '';
+                document.getElementById('metaDataFile').value = '';
+                document.querySelectorAll('.btn-primary, .btn-secondary').forEach(btn => {
+                    btn.innerHTML = btn.innerHTML.replace('<i class="fas fa-check"></i>', '');
+                    if (btn.textContent.includes('Select Sales Data File')) {
+                        btn.innerHTML = '<i class="fas fa-file-excel"></i> Select Sales Data File';
+                    } else {
+                        btn.innerHTML = '<i class="fab fa-facebook"></i> Select Meta Report File';
+                    }
+                });
+                
+                showAlert('Data processed successfully! Dashboard updated.', 'success');
+                updateLastUpdated();
+            }, 2000);
+        }
+        
+        function processSalesData(jsonData) {
+            // In a real app, this would process the sales data structure
+            // For demo purposes, we'll just return the raw data
+            return jsonData;
+        }
+        
+        function processMetaData(jsonData) {
+            return jsonData.map(row => {
+                // Clean up and standardize the data
+                const processedRow = {};
+                
+                for (const key in row) {
+                    if (key.includes('ROAS')) {
+                        processedRow['Purchase ROAS (return on ad spend)'] = parseFloat(row[key]) || 0;
+                    } else if (key.includes('spent')) {
+                        processedRow['Amount spent (LKR)'] = parseFloat(row[key]) || 0;
+                    } else if (key.includes('Purchases')) {
+                        processedRow['Purchases'] = parseInt(row[key]) || 0;
+                    } else if (key.includes('Cost per')) {
+                        processedRow['Cost per results'] = parseFloat(row[key]) || 0;
+                    } else if (key.includes('Reach')) {
+                        processedRow['Reach'] = parseInt(row[key]) || 0;
+                    } else if (key.includes('CTR')) {
+                        processedRow['CTR (all)'] = parseFloat(row[key]) || 0;
+                    } else if (key.includes('delivery')) {
+                        processedRow['Ad set delivery'] = String(row[key]);
+                    } else if (key.includes('name')) {
+                        processedRow['Ad set name'] = String(row[key]);
+                    }
+                }
+                
+                return processedRow;
+            }).filter(row => row['Ad set name'] && !isNaN(row['Amount spent (LKR)']));
+        }
+        
+        function showUploadProcessingIndicator() {
+            document.getElementById('uploadProcessingIndicator').classList.add('show');
+            document.getElementById('uploadSuccess').style.display = 'none';
+        }
+        
+        function hideUploadProcessingIndicator() {
+            document.getElementById('uploadProcessingIndicator').classList.remove('show');
+        }
+        
+        // Initialize all charts
+        function initCharts() {
+            // Destroy existing charts
+            Object.values(allCharts).forEach(chart => {
+                if (chart) chart.destroy();
+            });
+            
+            const textColor = darkMode ? '#f8fafc' : '#1e293b';
+            const gridColor = darkMode ? '#334155' : '#e2e8f0';
+            
+            // Sales Trend Chart
+            const salesTrendCtx = document.getElementById('salesTrendChart').getContext('2d');
+            allCharts.salesTrend = new Chart(salesTrendCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5'],
+                    datasets: [{
+                        label: 'Weekly Sales (Million ₹)',
+                        data: [28.5, 32.1, 29.8, 35.2, 27.9],
+                        borderColor: 'rgba(99, 102, 241, 1)',
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: gridColor
+                            },
+                            ticks: {
+                                color: textColor
+                            },
+                            title: {
+                                display: true,
+                                text: 'Sales (Million ₹)',
+                                color: textColor
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: gridColor
+                            },
+                            ticks: {
+                                color: textColor
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                color: textColor
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Sales Distribution Chart (Pie)
+            const salesDistributionCtx = document.getElementById('salesDistributionChart').getContext('2d');
+            allCharts.salesDistribution = new Chart(salesDistributionCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['In-Store', 'Online', 'Mobile App', 'Phone Orders'],
+                    datasets: [{
+                        data: [65, 20, 12, 3],
+                        backgroundColor: [
+                            'rgba(99, 102, 241, 0.8)',
+                            'rgba(16, 185, 129, 0.8)',
+                            'rgba(245, 158, 11, 0.8)',
+                            'rgba(100, 116, 139, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(99, 102, 241, 1)',
+                            'rgba(16, 185, 129, 1)',
+                            'rgba(245, 158, 11, 1)',
+                            'rgba(100, 116, 139, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                color: textColor
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Online Sales Chart
+            const onlineSalesCtx = document.getElementById('onlineSalesChart').getContext('2d');
+            allCharts.onlineSalesChart = new Chart(onlineSalesCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Meta Ads', 'Website', 'Mobile App', 'Email', 'Marketplace'],
+                    datasets: [{
+                        label: 'Sales (Million ₹)',
+                        data: [12.4, 5.2, 3.8, 2.1, 1.0],
+                        backgroundColor: [
+                            'rgba(0, 86, 163, 0.8)',
+                            'rgba(99, 102, 241, 0.8)',
+                            'rgba(16, 185, 129, 0.8)',
+                            'rgba(245, 158, 11, 0.8)',
+                            'rgba(100, 116, 139, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(0, 86, 163, 1)',
+                            'rgba(99, 102, 241, 1)',
+                            'rgba(16, 185, 129, 1)',
+                            'rgba(245, 158, 11, 1)',
+                            'rgba(100, 116, 139, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: gridColor
+                            },
+                            ticks: {
+                                color: textColor
+                            },
+                            title: {
+                                display: true,
+                                text: 'Sales (Million ₹)',
+                                color: textColor
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: gridColor
+                            },
+                            ticks: {
+                                color: textColor
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: textColor
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Sales by Category Chart
+            const salesByCategoryCtx = document.getElementById('salesByCategoryChart').getContext('2d');
+            allCharts.salesByCategory = new Chart(salesByCategoryCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Electronics', 'Furniture', 'Appliances', 'Home Goods', 'Other'],
+                    datasets: [{
+                        label: 'Sales (Million ₹)',
+                        data: [35, 25, 20, 15, 5],
+                        backgroundColor: [
+                            'rgba(99, 102, 241, 0.8)',
+                            'rgba(16, 185, 129, 0.8)',
+                            'rgba(245, 158, 11, 0.8)',
+                            'rgba(239, 68, 68, 0.8)',
+                            'rgba(100, 116, 139, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(99, 102, 241, 1)',
+                            'rgba(16, 185, 129, 1)',
+                            'rgba(245, 158, 11, 1)',
+                            'rgba(239, 68, 68, 1)',
+                            'rgba(100, 116, 139, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: gridColor
+                            },
+                            ticks: {
+                                color: textColor
+                            },
+                            title: {
+                                display: true,
+                                text: 'Sales (Million ₹)',
+                                color: textColor
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: gridColor
+                            },
+                            ticks: {
+                                color: textColor
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: textColor
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Campaign Trend Chart
+            const campaignTrendCtx = document.getElementById('campaignTrendChart').getContext('2d');
+            allCharts.campaignTrend = new Chart(campaignTrendCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                    datasets: [
+                        {
+                            label: 'Awareness Campaigns (Thousand ₹)',
+                            data: [120, 150, 180, 210],
+                            borderColor: 'rgba(99, 102, 241, 1)',
+                            backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Conversion Campaigns (Thousand ₹)',
+                            data: [80, 120, 150, 190],
+                            borderColor: 'rgba(16, 185, 129, 1)',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: gridColor
+                            },
+                            ticks: {
+                                color: textColor
+                            },
+                            title: {
+                                display: true,
+                                text: 'Spend (Thousand ₹)',
+                                color: textColor
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: gridColor
+                            },
+                            ticks: {
+                                color: textColor
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                color: textColor
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Current Month Chart (Comparison)
+            const currentMonthCtx = document.getElementById('currentMonthChart').getContext('2d');
+            allCharts.currentMonth = new Chart(currentMonthCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Sales (Million ₹)', 'Ad Spend (Thousand ₹)', 'Conversions'],
+                    datasets: [{
+                        label: 'June 2025',
+                        data: [97.9, 1118, 1042],
+                        backgroundColor: 'rgba(99, 102, 241, 0.8)',
+                        borderColor: 'rgba(99, 102, 241, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: gridColor
+                            },
+                            ticks: {
+                                color: textColor
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: gridColor
+                            },
+                            ticks: {
+                                color: textColor
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: textColor
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Previous Month Chart (Comparison)
+            const previousMonthCtx = document.getElementById('previousMonthChart').getContext('2d');
+            allCharts.previousMonth = new Chart(previousMonthCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Sales (Million ₹)', 'Ad Spend (Thousand ₹)', 'Conversions'],
+                    datasets: [{
+                        label: 'May 2025',
+                        data: [92.4, 993.5, 881],
+                        backgroundColor: 'rgba(100, 116, 139, 0.8)',
+                        borderColor: 'rgba(100, 116, 139, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: gridColor
+                            },
+                            ticks: {
+                                color: textColor
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: gridColor
+                            },
+                            ticks: {
+                                color: textColor
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: textColor
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Month Comparison Chart
+            const monthComparisonCtx = document.getElementById('monthComparisonChart').getContext('2d');
+            allCharts.monthComparison = new Chart(monthComparisonCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Sales', 'Ad Spend', 'Conversions', 'ROAS', 'CPP'],
+                    datasets: [
+                        {
+                            label: 'June 2025',
+                            data: [1.06, 1.13, 1.18, 0.98, 0.95],
+                            borderColor: 'rgba(99, 102, 241, 1)',
+                            backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'May 2025',
+                            data: [1.00, 1.00, 1.00, 1.00, 1.00],
+                            borderColor: 'rgba(100, 116, 139, 1)',
+                            backgroundColor: 'rgba(100, 116, 139, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: gridColor
+                            },
+                            ticks: {
+                                color: textColor
+                            },
+                            title: {
+                                display: true,
+                                text: 'Index (May = 1.00)',
+                                color: textColor
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: gridColor
+                            },
+                            ticks: {
+                                color: textColor
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: textColor
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Roadmap Chart
+            const roadmapCtx = document.getElementById('roadmapChart').getContext('2d');
+            allCharts.roadmap = new Chart(roadmapCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Creative Refresh', 'Audience Expansion', 'Budget Reallocation', 'Retargeting Setup', 'Testing Framework'],
+                    datasets: [{
+                        label: 'Implementation Priority',
+                        data: [9, 8, 7, 8, 6],
+                        backgroundColor: [
+                            'rgba(99, 102, 241, 0.8)',
+                            'rgba(16, 185, 129, 0.8)',
+                            'rgba(245, 158, 11, 0.8)',
+                            'rgba(239, 68, 68, 0.8)',
+                            'rgba(100, 116, 139, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(99, 102, 241, 1)',
+                            'rgba(16, 185, 129, 1)',
+                            'rgba(245, 158, 11, 1)',
+                            'rgba(239, 68, 68, 1)',
+                            'rgba(100, 116, 139, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 10,
+                            grid: {
+                                color: gridColor
+                            },
+                            ticks: {
+                                color: textColor
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: gridColor
+                            },
+                            ticks: {
+                                color: textColor
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: textColor
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Initialize with sample data
+        window.addEventListener('load', function() {
+            // Check for dark mode preference
+            checkDarkModePreference();
+            
+            // Sample data for demonstration
+            metaAdsData = [
+                {
+                    "Ad set name": "Loyalty & Non-loyalty",
+                    "Ad set delivery": "Conversion",
+                    "Amount spent (LKR)": 45000,
+                    "Purchases": 140,
+                    "Purchase ROAS (return on ad spend)": 36.97,
+                    "Cost per results": 308.42,
+                    "Reach": 17804,
+                    "CTR (all)": 0.0123118
+                },
+                {
+                    "Ad set name": "Father's Day Campaign",
+                    "Ad set delivery": "Awareness",
+                    "Amount spent (LKR)": 70000,
+                    "Purchases": 1,
+                    "Purchase ROAS (return on ad spend)": 0.22,
+                    "Cost per results": 15700,
+                    "Reach": 571781,
+                    "CTR (all)": 0.00213197
+                },
+                {
+                    "Ad set name": "GLO - MM",
+                    "Ad set delivery": "Awareness",
+                    "Amount spent (LKR)": 30000,
+                    "Purchases": 3,
+                    "Purchase ROAS (return on ad spend)": 1.24,
+                    "Cost per results": 12434.37,
+                    "Reach": 948209,
+                    "CTR (all)": 0.00256946
+                },
+                {
+                    "Ad set name": "Omni-channel",
+                    "Ad set delivery": "Traffic",
+                    "Amount spent (LKR)": 20000,
+                    "Purchases": 1,
+                    "Purchase ROAS (return on ad spend)": 0.66,
+                    "Cost per results": 13293.62,
+                    "Reach": 38933,
+                    "CTR (all)": 0.05822042
+                },
+                {
+                    "Ad set name": "HNB - 13/06",
+                    "Ad set delivery": "Conversion",
+                    "Amount spent (LKR)": 10000,
+                    "Purchases": 18,
+                    "Purchase ROAS (return on ad spend)": 23.00,
+                    "Cost per results": 12775.64,
+                    "Reach": 20861,
+                    "CTR (all)": 0.00896452
+                },
+                {
+                    "Ad set name": "29/06 Online Offer",
+                    "Ad set delivery": "Conversion",
+                    "Amount spent (LKR)": 20000,
+                    "Purchases": 47,
+                    "Purchase ROAS (return on ad spend)": 22.40,
+                    "Cost per results": 9532.36,
+                    "Reach": 20915,
+                    "CTR (all)": 0.02686545
+                }
+            ];
+            
+            initCharts();
+            filterCampaigns('all');
+            
+            // Set default date range to current month
+            setDateRange('month');
+        });
+    </script>
+<script src="scripts.js"></script></body>
+</html>
